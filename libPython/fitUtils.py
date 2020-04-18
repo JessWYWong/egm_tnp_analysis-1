@@ -122,7 +122,7 @@ def histFitterNominal( sample, tnpBin, tnpWorkspaceParam ):
     workspace = rt.vector("string")()
     for iw in tnpWorkspace:
         workspace.push_back(iw)
-    fitter.setWorkspace( workspace )
+    fitter.setWorkspace( workspace ,0)
 
     title = tnpBin['title'].replace(';',' - ')
     title = title.replace('probe_sc_eta','#eta_{SC}')
@@ -195,13 +195,22 @@ def histFitterAltSig( sample, tnpBin, tnpWorkspaceParam, isaddGaus=0 ):
 #############################################################
 ########## alternate background fitter
 #############################################################
-def histFitterAltBkg( sample, tnpBin, tnpWorkspaceParam ):
+def histFitterAltBkg( sample, tnpBin, tnpWorkspaceParam , isChebychev=0):
 
     tnpWorkspaceFunc = [
         "Gaussian::sigResPass(x,meanP,sigmaP)",
         "Gaussian::sigResFail(x,meanF,sigmaF)",
         "Exponential::bkgPass(x, alphaP)",
         "Exponential::bkgFail(x, alphaF)",
+        ]
+
+    if (isChebychev):
+        tnpWorkspaceFunc = []
+        tnpWorkspaceFunc = [
+            "Gaussian::sigResPass(x,meanP,sigmaP)",
+            "Gaussian::sigResFail(x,meanF,sigmaF)",
+            "RooChebychev::bkgPass(x, {p0P, p1P, p2P})",
+            "RooChebychev::bkgFail(x, {p0F, p1F, p2F})",
         ]
 
     tnpWorkspace = []
@@ -235,7 +244,7 @@ def histFitterAltBkg( sample, tnpBin, tnpWorkspaceParam ):
     workspace = rt.vector("string")()
     for iw in tnpWorkspace:
         workspace.push_back(iw)
-    fitter.setWorkspace( workspace )
+    fitter.setWorkspace( workspace ,0)
 
     title = tnpBin['title'].replace(';',' - ')
     title = title.replace('probe_sc_eta','#eta_{SC}')
